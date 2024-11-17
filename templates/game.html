@@ -5,81 +5,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guess the Cipher Game</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- Import Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background: black;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .container {
-            margin-top: 50px;
+        .glow {
+            text-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 40px #22c55e;
         }
 
-        .form-control,
-        .form-select {
-            margin-bottom: 15px;
+        .encrypted {
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-block;
+            animation: typing 5s steps(50, end) infinite alternate,
+                blink-caret 0.5s step-end infinite;
         }
 
-        .result {
-            margin-top: 30px;
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            from,
+            to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #22c55e;
+            }
+        }
+
+        input,
+        button {
+            background: transparent;
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        input:focus,
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .btn:hover {
+            background: #22c55e;
+            color: black;
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <h1 class="text-center">Guess the Cipher Game</h1>
-        <form id="textForm" method="post" class="mt-4" onsubmit="return validateInput()">
-            <div class="mb-3">
-                <label for="user_text" class="form-label">Enter your text (at least 4 letters):</label>
-                <input type="text" id="user_text" name="user_text" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Encrypt and Guess</button>
+<body class="w-full h-screen flex flex-col items-center justify-center text-green-400">
+    <h1 class="text-5xl glow font-bold mb-8 text-white">Guess the Cipher Game</h1>
+    <form id="textForm" method="post" class="flex flex-col items-center" onsubmit="return validateInput()">
+        <label for="user_text" class="mb-2">Enter your text (at least 4 letters):</label>
+        <input type="text" id="user_text" name="user_text" class="p-2 w-80 mb-4 rounded" required>
+        <button type="submit" class="btn p-2 px-6 rounded">Encrypt and Guess</button>
+    </form>
+
+    {% if encrypted_text %}
+    <div class="mt-8 text-center">
+        <h2 class="text-2xl glow">Encrypted Text</h2>
+        <p class="encrypted text-xl mt-4">{{ encrypted_text }}</p>
+        <h3 class="text-xl mt-6">Guess the Cipher Used</h3>
+        <form id="guessForm" class="flex flex-col items-center mt-4">
+            {% for option in options %}
+            <label class="mb-2">
+                <input type="radio" name="guess" value="{{ option }}" class="mr-2" required>
+                {{ option }}
+            </label>
+            {% endfor %}
+            <input type="hidden" name="correct_cipher" value="{{ correct_cipher }}">
+            <input type="hidden" name="explanation" value="{{ explanation|join(';') }}">
+            <button type="button" class="btn mt-4 p-2 px-6 rounded" onclick="submitGuess()">Submit Guess</button>
         </form>
-
-        {% if encrypted_text %}
-        <div class="result">
-            <h2>Encrypted Text</h2>
-            <p><strong>{{ encrypted_text }}</strong></p>
-            <h3>Guess the Cipher Used</h3>
-            <form id="guessForm">
-                {% for option in options %}
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="guess" id="{{ option }}" value="{{ option }}"
-                        required>
-                    <label class="form-check-label" for="{{ option }}">
-                        {{ option }}
-                    </label>
-                </div>
-                {% endfor %}
-                <input type="hidden" name="correct_cipher" value="{{ correct_cipher }}">
-                <input type="hidden" name="explanation" value="{{ explanation|join(';') }}">
-                <button type="button" class="btn btn-success mt-3" onclick="submitGuess()">Submit Guess</button>
-            </form>
-        </div>
-        {% endif %}
     </div>
+    {% endif %}
 
-    <!-- Modal -->
-    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="resultModalLabel">Result</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="resultMessage"></p>
-                    <ul id="explanationList"></ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
+    <div id="resultModal" class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-75 flex items-center justify-center">
+        <div class="bg-black border-2 border-green-400 p-8 rounded-lg">
+            <h2 class="text-2xl glow mb-4">Result</h2>
+            <p id="resultMessage"></p>
+            <ul id="explanationList" class="list-disc pl-4 mt-4"></ul>
+            <button class="btn mt-6 p-2 px-6 rounded" onclick="closeModal()">Close</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         function validateInput() {
             const userText = document.getElementById('user_text').value;
@@ -110,9 +130,12 @@
                         li.textContent = step;
                         explanationList.appendChild(li);
                     });
-                    const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-                    resultModal.show();
+                    document.getElementById('resultModal').classList.remove('hidden');
                 });
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.add('hidden');
         }
     </script>
 </body>

@@ -3,6 +3,7 @@ import random
 
 app = Flask(__name__)
 
+
 def caesar_cipher(text, shift, encrypt=True):
     result = ""
     explanation = []
@@ -14,11 +15,13 @@ def caesar_cipher(text, shift, encrypt=True):
             new_position = (original_position + shift) % 26
             new_char = chr(new_position + shift_amount)
             result += new_char
-            explanation.append(f"'{char}' -> '{new_char}' (shifted by {shift})")
+            explanation.append(
+                f"'{char}' -> '{new_char}' (shifted by {shift})")
         else:
             result += char
             explanation.append(f"'{char}' remains unchanged (non-alphabetic)")
     return result, explanation
+
 
 def atbash_cipher(text):
     result = ""
@@ -30,11 +33,13 @@ def atbash_cipher(text):
             new_position = 25 - original_position
             new_char = chr(new_position + shift_amount)
             result += new_char
-            explanation.append(f"'{char}' -> '{new_char}' (mirrored in alphabet)")
+            explanation.append(
+                f"'{char}' -> '{new_char}' (mirrored in alphabet)")
         else:
             result += char
             explanation.append(f"'{char}' remains unchanged (non-alphabetic)")
     return result, explanation
+
 
 def rail_fence_cipher_encrypt(text, key):
     rail = [['\n' for _ in range(len(text))] for _ in range(key)]
@@ -57,6 +62,7 @@ def rail_fence_cipher_encrypt(text, key):
                 result.append(rail[i][j])
     return ''.join(result), explanation
 
+
 def rail_fence_cipher_decrypt(cipher, key):
     rail = [['\n' for _ in range(len(cipher))] for _ in range(key)]
     dir_down = None
@@ -77,7 +83,8 @@ def rail_fence_cipher_decrypt(cipher, key):
         for j in range(len(cipher)):
             if rail[i][j] == '*' and index < len(cipher):
                 rail[i][j] = cipher[index]
-                explanation.append(f"Placing '{cipher[index]}' at rail {i}, column {j}")
+                explanation.append(
+                    f"Placing '{cipher[index]}' at rail {i}, column {j}")
                 index += 1
 
     result = []
@@ -93,6 +100,7 @@ def rail_fence_cipher_decrypt(cipher, key):
         row += 1 if dir_down else -1
 
     return ''.join(result), explanation
+
 
 def polybius_square_cipher_encrypt(text):
     square = {
@@ -117,6 +125,7 @@ def polybius_square_cipher_encrypt(text):
             explanation.append(f"'{char}' remains unchanged (non-alphabetic)")
     return ' '.join(result), explanation
 
+
 def polybius_square_cipher_decrypt(cipher):
     square = {
         '11': 'A', '12': 'B', '13': 'C', '14': 'D', '15': 'E',
@@ -140,6 +149,7 @@ def polybius_square_cipher_decrypt(cipher):
             explanation.append(f"'{pair}' remains unchanged (non-alphabetic)")
     return ''.join(result), explanation
 
+
 def random_cipher(text):
     ciphers = [
         ('Caesar Cipher', lambda t: caesar_cipher(t, 3, encrypt=True)),
@@ -151,15 +161,18 @@ def random_cipher(text):
     encrypted_text, explanation = cipher_func(text)
     return cipher_name, encrypted_text, explanation
 
+
 @app.route('/game', methods=['GET', 'POST'])
 def game():
     if request.method == 'POST':
         if 'user_text' in request.form:
             user_text = request.form['user_text']
-            correct_cipher, encrypted_text, explanation = random_cipher(user_text)
-            
+            correct_cipher, encrypted_text, explanation = random_cipher(
+                user_text)
+
             # Shuffle options for multiple-choice
-            options = ['Caesar Cipher', 'Atbash Cipher', 'Rail Fence Cipher', 'Polybius Square Cipher']
+            options = ['Caesar Cipher', 'Atbash Cipher',
+                       'Rail Fence Cipher', 'Polybius Square Cipher']
             random.shuffle(options)
 
             return render_template('game.html', encrypted_text=encrypted_text, options=options, correct_cipher=correct_cipher, explanation=explanation)
@@ -176,6 +189,12 @@ def game():
             return jsonify({'message': message, 'explanation': explanation})
 
     return render_template('game.html', encrypted_text=None, options=None, correct_cipher=None, explanation=None)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    return render_template("home.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)

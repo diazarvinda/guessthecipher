@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDC - Play The Game</title>
+    <!-- Import Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: black;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .glow {
+            text-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 40px #22c55e;
+        }
+    </style>
+</head>
+<body class="w-full h-screen flex items-center flex-col justify-center bg-black text-white">
+    <!-- Title and Button -->
+    <div class="flex items-center">
+        <h1 class="text-6xl  glow font-bold w-12 leading-64">
+            Guess The Cipher
+        </h1>
+        <a href="/game" class="ml-20 border-2 border-green-800 bg-green-800 text-xl px-4 py-1 rounded hover:bg-transparent hover:text-green-800 transition duration-1000">
+            Play
+        </a>
+        
+    </div>
+    
+    <!-- Running Text Div -->
+    <div id="hackingText" class="mt-12 text-xl text-green-400 font-mono">
+        <!-- Placeholder for animated text -->
+    </div>
+
+    <script>
+        // Text Encryption Effect
+        const hackingText = document.getElementById("hackingText");
+        const originalText = "Encryption Running..."; // Text to simulate encryption
+        const delay = 80; // Delay in ms
+        const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        let interval;
+
+        function startHackingEffect() {
+            let encryptedText = Array(originalText.length).fill(' '); // Start with blank spaces
+            let currentIndex = 0;
+
+            interval = setInterval(() => {
+                // Replace random characters in the string
+                for (let i = currentIndex; i < encryptedText.length; i++) {
+                    if (originalText[i] !== ' ') {
+                        encryptedText[i] = charset[Math.floor(Math.random() * charset.length)];
+                    }
+                }
+
+                // Replace one character with the correct one
+                if (currentIndex < originalText.length) {
+                    encryptedText[currentIndex] = originalText[currentIndex];
+                    currentIndex++;
+                }
+
+                hackingText.textContent = encryptedText.join("");
+
+                // Restart when done
+                if (currentIndex >= originalText.length) {
+                    clearInterval(interval);
+                    setTimeout(startHackingEffect, 1000); // Restart after a short delay
+                }
+            }, delay);
+        }
+
+        // Start the infinite animation
+        startHackingEffect();
+    </script>
+</body>
+</html>
