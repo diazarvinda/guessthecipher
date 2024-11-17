@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,23 +12,26 @@
             background: black;
             font-family: 'Courier New', Courier, monospace;
         }
+
         .glow {
             text-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 40px #22c55e;
         }
     </style>
 </head>
+
 <body class="w-full h-screen flex items-center flex-col justify-center bg-black text-white">
     <!-- Title and Button -->
     <div class="flex items-center">
         <h1 class="text-6xl  glow font-bold w-12 leading-64">
             Guess The Cipher
         </h1>
-        <a href="/game" class="ml-20 border-2 border-green-800 bg-green-800 text-xl px-4 py-1 rounded hover:bg-transparent hover:text-green-800 transition duration-1000">
+        <a href="/game"
+            class="ml-20 border-2 border-green-800 bg-green-800 text-xl px-4 py-1 rounded hover:bg-transparent hover:text-green-800 transition duration-1000">
             Play
         </a>
-        
+
     </div>
-    
+
     <!-- Running Text Div -->
     <div id="hackingText" class="mt-12 text-xl text-green-400 font-mono">
         <!-- Placeholder for animated text -->
@@ -74,4 +78,5 @@
         startHackingEffect();
     </script>
 </body>
+
 </html>
