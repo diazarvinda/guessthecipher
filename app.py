@@ -112,12 +112,12 @@ def vigenere_cipher(text, key, encrypt=True):
         if text[i].isalpha():
             if encrypt:
                 value = (text_as_int[i] + key_as_int[i % key_length]) % 26
-                result += chr(value + 65)
-                explanation.append(f"'{text[i]}' -> '{chr(value + 65)}' (shifted by {key_as_int[i % key_length]})")
+                result += chr(value + 97)  # Changed from 65 to 97 for lowercase output
+                explanation.append(f"'{text[i]}' -> '{chr(value + 97)}' (shifted by {key_as_int[i % key_length]})")
             else:
                 value = (text_as_int[i] - key_as_int[i % key_length]) % 26
-                result += chr(value + 65)
-                explanation.append(f"'{text[i]}' -> '{chr(value + 65)}' (shifted back by {key_as_int[i % key_length]})")
+                result += chr(value + 97)  # Changed from 65 to 97 for lowercase output
+                explanation.append(f"'{text[i]}' -> '{chr(value + 97)}' (shifted back by {key_as_int[i % key_length]})")
         else:
             result += text[i]
             explanation.append(f"'{text[i]}' remains unchanged (non-alphabetic)")
