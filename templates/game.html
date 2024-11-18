@@ -111,10 +111,10 @@
     <script>
         function validateInput() {
             const userText = document.getElementById('user_text').value;
-            const letters = userText.match(/[a-zA-Z]/g) || [];
-            const letterCount = letters.length;
-            if (letterCount < 4) {
-                alert('Please enter at least 4 letters.');
+            const lettersAndNumbers = userText.match(/[a-zA-Z0-9]/g) || [];
+            const count = lettersAndNumbers.length;
+            if (count < 4) {
+                alert('Please enter at least 4 letters or numbers.');
                 return false;
             }
             return true;
